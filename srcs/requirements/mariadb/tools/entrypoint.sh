@@ -3,14 +3,13 @@ set -e
 
 MARIADB_DATABASE=$MYSQL_DATABASE
 MARIADB_USER=$MYSQL_USER
-MARIADB_PASSWORD=$(cat run/secrets/db_password)
-MARIADB_ROOT_PASSWORD=$(cat run/secrets/db_root_password)
+MARIADB_PASSWORD=$(cat /run/secrets/db_password.txt)
+MARIADB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password.txt)
 
 export MARIADB_DATABASE
 export MARIADB_USER
 export MARIADB_PASSWORD
 export MARIADB_ROOT_PASSWORD
-
 
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
@@ -32,7 +31,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
       fi
   done
   # Init the DB
-  envsubst </init.sql | mariadb -u root
+  envsubst < /init.sql | mariadb -u root
   kill "$pid"
   wait "$pid" || true
   echo "MariaDB initialization complete."

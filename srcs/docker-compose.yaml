@@ -1,0 +1,49 @@
+services:
+
+# MARIADB #
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    build:
+      context: requirements/mariadb
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - backend
+    secrets:
+      - db_password
+      - db_root_password
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+# VOLUMES #
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ekeisler/data/db
+      o: bind
+
+# NETWORKS #
+networks:
+
+  backend:
+    driver: bridge
+    name: backend
+    internal: true
+
+# SECRETS #
+secrets:
+ 
+ # MARIADB #
+    db_password:
+      file: "../secrets/mariadb/db_password.txt"
+    db_root_password:
+      file: "../secrets/mariadb/db_root_password.txt"
