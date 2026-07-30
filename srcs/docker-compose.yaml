@@ -8,6 +8,9 @@ services:
       context: requirements/mariadb
     env_file:
       - .env
+    environment:
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MARIADB_PASSWORD_FILE: /run/secrets/db_password
     volumes:
       - db_data:/var/lib/mysql
     networks:
@@ -16,7 +19,7 @@ services:
       - db_password
       - db_root_password
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p\"$(cat /run/secrets/db_root_password)\""]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,7 +31,7 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/ekeisler/data/db
+      device: /home/ekeisler/data/mariadb
       o: bind
 
 # NETWORKS #
