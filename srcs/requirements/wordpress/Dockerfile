@@ -11,6 +11,7 @@ RUN apk update && apk add --no-cache \
     php-json \
     php-mbstring \
     php-mysqli \
+    php-phar \
     php-xml \
     php-zip \
     gettext \

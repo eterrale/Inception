@@ -2,7 +2,7 @@ services:
 
 # MARIADB #
   mariadb:
-    image: mariadb
+    image: mariadb:1.0
     container_name: mariadb
     build:
       context: requirements/mariadb
@@ -19,10 +19,51 @@ services:
       - db_password.txt
       - db_root_password.txt
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p\"$(cat /run/secrets/db_root_password.txt)z\""]
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p\"$(cat /run/secrets/db_root_password.txt)\""]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+# WORDPRESS #
+  wordpress:
+    image: wordpress:1.0
+    container_name: wordpress
+    build:
+      context: requirements/wordpress
+    env_file:
+      - .env
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - wp_data:/var/www/html
+    networks:
+      - backend
+    secrets:
+      - db_password.txt
+      - wp_admin_password.txt
+      - wp_user_password.txt
+    restart: unless-stopped
+
+# NGINX #
+  nginx:
+    image: nginx:1.0
+    container_name: nginx
+    build:
+      context: requirements/nginx
+    env_file:
+      - .env
+    depends_on:
+      wordpress:
+        condition: service_started
+    ports:
+      - "443:443"
+    volumes:
+      - wp_data:/var/www/html:ro
+    networks:
+      - backend
+      - frontend
     restart: unless-stopped
 
 # VOLUMES #
@@ -33,6 +74,12 @@ volumes:
       type: none
       device: /home/ekeisler/data/mariadb
       o: bind
+  wp_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ekeisler/data/wordpress
+      o: bind
 
 # NETWORKS #
 networks:
@@ -42,11 +89,21 @@ networks:
     name: backend
     internal: true
 
+  frontend:
+    driver: bridge
+    name: frontend
+
 # SECRETS #
 secrets:
- 
+
  # MARIADB #
     db_password.txt:
       file: "../secrets/mariadb/db_password.txt"
     db_root_password.txt:
       file: "../secrets/mariadb/db_root_password.txt"
+
+ # WORDPRESS #
+    wp_admin_password.txt:
+      file: "../secrets/wordpress/wp_admin_password.txt"
+    wp_user_password.txt:
+      file: "../secrets/wordpress/wp_user_password.txt"

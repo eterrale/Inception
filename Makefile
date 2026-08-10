@@ -1,25 +1,26 @@
 # =============================================================================
-# Transcendance - Makefile
+# Inception - Makefile
 # =============================================================================
 
-PROJECT_NAME := transcendance
+PROJECT_NAME := inception
 COMPOSE_FILE := srcs/docker-compose.yaml
 COMPOSE      := docker compose -p $(PROJECT_NAME) -f $(COMPOSE_FILE)
 LOG_DIR      := logs
 
 ENV_FILE     := srcs/.env
 SECRETS_DIR  := secrets
-SECRETS := mariadb/db_root_password.txt mariadb/db_password.txt credentials.txt wp_user_password.txt
+SECRETS := mariadb/db_root_password.txt mariadb/db_password.txt wordpress/wp_admin_password.txt wordpress/wp_user_password.txt
+DATA_DIR     := $(HOME)/data
 
 RED    := \033[0;31m
 YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-.PHONY: all build up down front back \
+.PHONY: all build up down \
         logs ps \
         clean fclean \
-        check-env check-secrets \
+        check-env check-secrets prepare-dirs \
         help
 
 # -----------------------------------------------------------------------------
@@ -57,23 +58,20 @@ check-secrets: ## Verify secret files exist and are not empty
 		fi; \
 	done
 
+prepare-dirs: ## Create host directories the named volumes bind to (mariadb/wordpress data)
+	@mkdir -p $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress
+
 # -----------------------------------------------------------------------------
 # Build & run
 # -----------------------------------------------------------------------------
-build: check-env check-secrets ## Build and start all services (front + back + postgres)
+build: check-env check-secrets prepare-dirs ## Build and start all services (mariadb + wordpress + nginx)
 	$(COMPOSE) up --build -d
 
-up: check-env check-secrets ## Start all services (front + back + postgres)
+up: check-env check-secrets prepare-dirs ## Start all services (mariadb + wordpress + nginx)
 	$(COMPOSE) up -d
 
 down: ## Stop and remove all containers
 	$(COMPOSE) down
-
-front: check-env check-secrets ## Build and start only the front service
-	$(COMPOSE) up --build -d front
-
-back: check-env check-secrets ## Build and start only the back service (+ postgres if needed)
-	$(COMPOSE) up --build -d back
 
 # -----------------------------------------------------------------------------
 # Rebuild
@@ -99,7 +97,7 @@ clean: ## Stop containers and remove associated images/networks (keeps volumes)
 	$(COMPOSE) down --rmi all
 
 fclean: ## Full clean: also remove named volumes (asks for confirmation, scoped to this project only)
-	@printf "$(YELLOW)WARNING:$(NC) this will remove all containers, images AND named volumes (e.g. postgres data) for this project only.\n"
+	@printf "$(YELLOW)WARNING:$(NC) this will remove all containers, images AND named volumes (e.g. mariadb/wordpress data) for this project only.\n"
 	@read -p "Are you sure? [y/N] " confirm && \
 		if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
 			$(COMPOSE) down -v --rmi all && \

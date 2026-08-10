@@ -44,7 +44,7 @@ fi
 if ! wp core is-installed --allow-root; then
     echo "Installing WordPress..."
     wp core install \
-        --url="$DOMAIN_NAME" \
+        --url="https://$DOMAIN_NAME" \
         --title="My WordPress Site" \
         --admin_user="siteowner" \
         --admin_password="$WP_ADMIN_PASSWORD" \

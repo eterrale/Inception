@@ -1,2 +1,14 @@
 *.env
 secrets
+
+# Claude Code
+.claude/settings.local.json
+.claude.json
+.claude.json.backup.*
+.claude/history.jsonl
+.claude/cache/
+.claude/backups/
+.claude/shell-snapshots/
+.credentials.json
+CLAUDE.md
+.claude/settings.json
