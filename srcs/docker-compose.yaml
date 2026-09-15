@@ -6,6 +6,7 @@ services:
     container_name: mariadb
     build:
       context: requirements/mariadb
+    pull_policy: build
     env_file:
       - .env
     volumes:
@@ -28,6 +29,7 @@ services:
     container_name: wordpress
     build:
       context: requirements/wordpress
+    pull_policy: build
     env_file:
       - .env
     depends_on:
@@ -49,6 +51,7 @@ services:
     container_name: nginx
     build:
       context: requirements/nginx
+    pull_policy: build
     env_file:
       - .env
     depends_on:
@@ -83,12 +86,10 @@ networks:
 
   backend:
     driver: bridge
-    name: backend
     internal: true
 
   frontend:
     driver: bridge
-    name: frontend
 
 # SECRETS #
 secrets:
