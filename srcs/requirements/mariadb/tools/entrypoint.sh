@@ -13,6 +13,7 @@ export MARIADB_ROOT_PASSWORD
 
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
+chown -R mysql:mysql /var/lib/mysql
 
 # Initialization
 if [ ! -d "/var/lib/mysql/mysql" ]; then

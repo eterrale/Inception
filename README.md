@@ -83,7 +83,7 @@ Full setup, usage, and troubleshooting details: [`USER_DOC.md`](USER_DOC.md). Im
 
 **Networking concepts studied:** Docker bridge/internal networks, inter-container DNS via service names, reverse proxying, FastCGI, HTTPS/TLS (including version restriction), `/etc/hosts`, network isolation.
 
-**References:** [Docker](https://docs.docker.com/) · [Compose](https://docs.docker.com/compose/) · [Dockerfile](https://docs.docker.com/reference/dockerfile/) · [Volumes](https://docs.docker.com/engine/storage/volumes/) · [Networking](https://docs.docker.com/engine/network/) · [Secrets](https://docs.docker.com/engine/swarm/secrets/) · [NGINX](https://nginx.org/en/docs/) · [PHP-FPM](https://www.php.net/manual/en/install.fpm.php) · [MariaDB](https://mariadb.com/kb/en/documentation/) · [WordPress](https://wordpress.org/documentation/) · [WP-CLI](https://developer.wordpress.org/cli/commands/)
+**References:** [Docker](https://blog.stephane-robert.info/docs/conteneurisation/) · [PHP-FPM](https://www.php.net/manual/en/install.fpm.php) · [MariaDB](https://mariadb.com/kb/en/documentation/) · [WordPress](https://wordpress.org/documentation/) · [WP-CLI](https://developer.wordpress.org/cli/commands/)
 
 ### AI Usage 🤖
 
