@@ -96,14 +96,15 @@ ps: ## Show status of running containers
 clean: ## Stop containers and remove associated images/networks (keeps volumes)
 	$(COMPOSE) down --rmi all
 
-fclean: ## Full clean: also remove named volumes (asks for confirmation, scoped to this project only)
-	@printf "$(YELLOW)WARNING:$(NC) this will remove all containers, images AND named volumes (e.g. mariadb/wordpress data) for this project only.\n"
+fclean: ## Full clean: also remove named volumes and their bind-mounted data (asks for confirmation, scoped to this project only)
+	@printf "$(YELLOW)WARNING:$(NC) this will remove all containers, images, named volumes AND their data under $(DATA_DIR) for this project only.\n"
 	@read -p "Are you sure? [y/N] " confirm && \
 		if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
 			$(COMPOSE) down -v --rmi all && \
 			docker image prune -f --filter "label=com.docker.compose.project=$(PROJECT_NAME)" && \
 			docker volume prune -f --filter "label=com.docker.compose.project=$(PROJECT_NAME)" && \
-			docker network prune -f --filter "label=com.docker.compose.project=$(PROJECT_NAME)"; \
+			docker network prune -f --filter "label=com.docker.compose.project=$(PROJECT_NAME)" && \
+			sudo rm -rf $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress; \
 		else \
 			printf "$(CYAN)Aborted.$(NC)\n"; \
 		fi
